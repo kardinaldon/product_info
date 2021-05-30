@@ -13,7 +13,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private Long productId;
+    private long productId;
 
     @Column(name = "title")
     private String title;
@@ -22,7 +22,7 @@ public class Product {
     private String description;
 
     @Column(name = "price")
-    private Long price;
+    private long price;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
