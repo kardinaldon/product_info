@@ -21,14 +21,16 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "language")
-    private String language;
+    @ManyToOne
+    @JoinColumn(name="language_id", nullable=false)
+    private Language language;
 
     @Column(name = "price")
     private long price;
 
-    @Column(name = "price_currency")
-    private String priceCurrency;
+    @ManyToOne
+    @JoinColumn(name="currency_id", nullable=false)
+    private PriceCurrency priceCurrency;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;

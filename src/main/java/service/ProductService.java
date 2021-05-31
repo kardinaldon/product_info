@@ -1,6 +1,8 @@
 package service;
 
 import dao.ProductRepository;
+import model.Language;
+import model.PriceCurrency;
 import model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,15 @@ public class ProductService {
 
     private final static Logger log = LoggerFactory.getLogger(ProductService.class);
     private Optional<Product> optionalProduct;
+    private Optional<Language> optionalLanguage;
+    private Optional<PriceCurrency> optionalPriceCurrency;
     private List<Product> productList;
+
+    @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
+    private LanguageService languageService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -35,10 +45,20 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> getByPartOfTitle(String title) {
+    public List<Product> getByPartOfTitle(String title, String languageId, String currencyId) {
         try {
-            productList = productRepository.findByTitleContains(title);
-            return productList;
+            optionalLanguage = languageService.getLanguageById(languageId);
+            optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
+                productList = productRepository
+                        .findByTitleContainsAndLanguageAndPriceCurrency(title,
+                                optionalLanguage.get().getLanguageId(),
+                                optionalPriceCurrency.get().getCurrencyId());
+                return productList;
+            }
+            else {
+                return new ArrayList<>();
+            }
         } catch (Exception ex) {
             log.info(ex.getMessage());
             return new ArrayList<>();
@@ -46,10 +66,22 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> getByPartOfDescription(String partOfDescription) {
+    public List<Product> getByPartOfDescription(String partOfDescription,
+                                                String languageId,
+                                                String currencyId) {
         try {
-            productList = productRepository.findByDescriptionContains(partOfDescription);
-            return productList;
+            optionalLanguage = languageService.getLanguageById(languageId);
+            optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
+                productList = productRepository
+                        .findByDescriptionContainsAndLanguageAndPriceCurrency(partOfDescription,
+                                optionalLanguage.get().getLanguageId(),
+                                optionalPriceCurrency.get().getCurrencyId());
+                return productList;
+            }
+            else {
+                return new ArrayList<>();
+            }
         } catch (Exception ex) {
             log.info(ex.getMessage());
             return new ArrayList<>();
@@ -57,10 +89,19 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> getAllProducts(){
+    public List<Product> getAllProductsByLanguageAndPriceCurrency(String languageId, String currencyId){
         try {
-            List<Product> productList = productRepository.findAll();
-            return productList;
+            optionalLanguage = languageService.getLanguageById(languageId);
+            optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
+                List<Product> productList = productRepository.findAllByLanguageAndPriceCurrency(
+                        optionalLanguage.get().getLanguageId(),
+                        optionalPriceCurrency.get().getCurrencyId());
+                return productList;
+            }
+            else {
+                return new ArrayList<>();
+            }
         }
         catch (Exception ex) {
             log.info(ex.getMessage());
