@@ -21,8 +21,14 @@ public class Product {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "language")
+    private String language;
+
     @Column(name = "price")
     private long price;
+
+    @Column(name = "price_currency")
+    private String priceCurrency;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;

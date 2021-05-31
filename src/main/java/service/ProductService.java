@@ -103,5 +103,15 @@ public class ProductService {
         }
     }
 
+    @Transactional
+    public long createProduct(Product product) {
+        try {
+            Product newProduct = productRepository.save(product);
+            return newProduct.getProductId();
+        } catch (Exception ex) {
+            log.info(ex.getMessage());
+            return 0;
+        }
+    }
 
 }
