@@ -7,9 +7,13 @@ import model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,7 @@ public class ProductService {
     private Optional<Language> optionalLanguage;
     private Optional<PriceCurrency> optionalPriceCurrency;
     private List<Product> productList;
+    private Pageable pagination;
 
     @Autowired
     private CurrencyService currencyService;
@@ -45,15 +50,43 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> getByPartOfTitle(String title, String languageId, String currencyId) {
+    public Optional<Product> getByProductIdLanguageCurrency (long id,
+                                                             String languageId,
+                                                             String currencyId) {
         try {
             optionalLanguage = languageService.getLanguageById(languageId);
             optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
             if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
+                optionalProduct = productRepository.findByProductIdAndLanguageAndPriceCurrency(id,
+                        optionalLanguage.get(),
+                        optionalPriceCurrency.get());
+                return optionalProduct;
+            }
+            else{
+                return Optional.empty();
+            }
+        } catch (Exception ex) {
+            log.info(ex.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    @Transactional
+    public List<Product> getByPartOfTitle(String title,
+                                          String languageId,
+                                          String currencyId,
+                                          int size,
+                                          int page) {
+        try {
+            optionalLanguage = languageService.getLanguageById(languageId);
+            optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            pagination = PageRequest.of(page, size);
+            if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
                 productList = productRepository
                         .findByTitleContainsAndLanguageAndPriceCurrency(title,
-                                optionalLanguage.get().getLanguageId(),
-                                optionalPriceCurrency.get().getCurrencyId());
+                                optionalLanguage.get(),
+                                optionalPriceCurrency.get(),
+                                pagination);
                 return productList;
             }
             else {
@@ -68,15 +101,19 @@ public class ProductService {
     @Transactional
     public List<Product> getByPartOfDescription(String partOfDescription,
                                                 String languageId,
-                                                String currencyId) {
+                                                String currencyId,
+                                                int size,
+                                                int page) {
         try {
             optionalLanguage = languageService.getLanguageById(languageId);
             optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            pagination = PageRequest.of(page, size);
             if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
                 productList = productRepository
                         .findByDescriptionContainsAndLanguageAndPriceCurrency(partOfDescription,
-                                optionalLanguage.get().getLanguageId(),
-                                optionalPriceCurrency.get().getCurrencyId());
+                                optionalLanguage.get(),
+                                optionalPriceCurrency.get(),
+                                pagination);
                 return productList;
             }
             else {
@@ -89,14 +126,19 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> getAllProductsByLanguageAndPriceCurrency(String languageId, String currencyId){
+    public List<Product> getAllProductsByLanguageAndPriceCurrency(String languageId,
+                                                                  String currencyId,
+                                                                  int size,
+                                                                  int page){
         try {
             optionalLanguage = languageService.getLanguageById(languageId);
             optionalPriceCurrency = currencyService.getCurrencyById(currencyId);
+            pagination = PageRequest.of(page, size);
             if(optionalLanguage.isPresent() && optionalPriceCurrency.isPresent()){
                 List<Product> productList = productRepository.findAllByLanguageAndPriceCurrency(
-                        optionalLanguage.get().getLanguageId(),
-                        optionalPriceCurrency.get().getCurrencyId());
+                        optionalLanguage.get(),
+                        optionalPriceCurrency.get(),
+                        pagination);
                 return productList;
             }
             else {
@@ -117,7 +159,9 @@ public class ProductService {
                 return true;
             }
             else {
-                log.info("product with id " + product.getProductId() + " not found, delete is not possible");
+                log.info("product with id " +
+                        product.getProductId() +
+                        " not found, delete is not possible");
                 return false;
             }
         } catch (Exception ex) {
@@ -130,12 +174,15 @@ public class ProductService {
     public Optional<Product> updateProduct(Product product) {
         try {
             if(productRepository.existsById(product.getProductId())) {
+                product.setModificationDate(LocalDateTime.now());
                 Product updatedProduct = productRepository.save(product);
                 optionalProduct = Optional.of(updatedProduct);
                 return optionalProduct;
             }
             else {
-                log.info("product with id " + product.getProductId() + " not found, update is not possible");
+                log.info("product with id " +
+                        product.getProductId() +
+                        " not found, update is not possible");
                 return Optional.empty();
             }
         } catch (Exception ex) {
@@ -147,6 +194,8 @@ public class ProductService {
     @Transactional
     public long createProduct(Product product) {
         try {
+            product.setModificationDate(LocalDateTime.now());
+            product.setCreationDate(LocalDateTime.now());
             Product newProduct = productRepository.save(product);
             return newProduct.getProductId();
         } catch (Exception ex) {

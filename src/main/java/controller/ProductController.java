@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import service.ProductService;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -19,7 +18,6 @@ public class ProductController {
     private ProductService productService;
 
     private Optional<Product> optionalProduct;
-    private List<Product> productList;
     private Product product;
 
     @GetMapping(path = "/{id}", produces = "application/json")

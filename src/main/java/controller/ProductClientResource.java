@@ -22,12 +22,12 @@ public class ProductClientResource {
     private List<Product> productList;
     private Product product;
 
-    @GetMapping(path = "/{id}", produces = "application/json")
-    public ResponseEntity getProductById(@PathVariable long id,
-                                         @PathVariable String language,
-                                         @PathVariable String currency) {
+    @GetMapping(path = "/id", produces = "application/json")
+    public ResponseEntity getProductById(@RequestParam @NotNull long id,
+                                         @RequestParam @NotNull String language,
+                                         @RequestParam @NotNull String currency) {
         if (id != 0) {
-            optionalProduct = productService.getById(id);
+            optionalProduct = productService.getByProductIdLanguageCurrency(id, language, currency);
             if(optionalProduct.isPresent()) {
                 product = optionalProduct.get();
                 return new ResponseEntity(product, HttpStatus.OK);
@@ -41,12 +41,14 @@ public class ProductClientResource {
         }
     }
 
-    @GetMapping(path = "/{title}", produces = "application/json")
-    public ResponseEntity getProductByTitle(@PathVariable @NotNull String title,
-                                            @PathVariable String language,
-                                            @PathVariable String currency) {
+    @GetMapping(path = "/title",produces = "application/json")
+    public ResponseEntity getProductByTitle(@RequestParam @NotNull String title,
+                                            @RequestParam String language,
+                                            @RequestParam String currency,
+                                            @RequestParam int size,
+                                            @RequestParam int page) {
         if (!title.isEmpty()) {
-            productList = productService.getByPartOfTitle(title, language, currency);
+            productList = productService.getByPartOfTitle(title, language, currency, size, page);
             if(!productList.isEmpty()) {
                 return new ResponseEntity(productList, HttpStatus.OK);
             }
@@ -59,12 +61,14 @@ public class ProductClientResource {
         }
     }
 
-    @GetMapping(path = "/{description}", produces = "application/json")
-    public ResponseEntity getProductByPartOfDescription(@PathVariable @NotNull String description,
-                                                        @PathVariable String language,
-                                                        @PathVariable String currency) {
+    @GetMapping(path = "/description",produces = "application/json")
+    public ResponseEntity getProductByPartOfDescription(@RequestParam @NotNull String description,
+                                                        @RequestParam String language,
+                                                        @RequestParam String currency,
+                                                        @RequestParam int size,
+                                                        @RequestParam int page) {
         if (!description.isEmpty()) {
-            productList = productService.getByPartOfDescription(description, language, currency);
+            productList = productService.getByPartOfDescription(description, language, currency, size, page);
             if(!productList.isEmpty()) {
                 return new ResponseEntity(productList, HttpStatus.OK);
             }
@@ -77,10 +81,12 @@ public class ProductClientResource {
         }
     }
 
-    @GetMapping(produces = "application/json")
-    public ResponseEntity getAllProducts(@PathVariable String language,
-            @PathVariable String currency) {
-        productList = productService.getAllProductsByLanguageAndPriceCurrency(language, currency);
+    @GetMapping(path = "/all",produces = "application/json")
+    public ResponseEntity getAllProducts(@RequestParam String language,
+                                         @RequestParam String currency,
+                                         @RequestParam int size,
+                                         @RequestParam int page) {
+        productList = productService.getAllProductsByLanguageAndPriceCurrency(language, currency, size, page);
         if(!productList.isEmpty()){
             return new ResponseEntity(productList, HttpStatus.OK);
         }

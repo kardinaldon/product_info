@@ -17,7 +17,7 @@ CREATE TABLE currency (
 
 CREATE TABLE product
 (
-    product_id bigint not null,
+    product_id serial not null,
     title varchar not null,
     description varchar,
     language_id varchar not null,
