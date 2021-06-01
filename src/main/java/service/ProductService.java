@@ -24,6 +24,7 @@ public class ProductService {
 
     private final static Logger log = LoggerFactory.getLogger(ProductService.class);
     private Optional<Product> optionalProduct;
+    private Product product;
     private Optional<Language> optionalLanguage;
     private Optional<PriceCurrency> optionalPriceCurrency;
     private List<Product> productList;
@@ -152,15 +153,16 @@ public class ProductService {
     }
 
     @Transactional
-    public boolean deleteProduct(Product product){
+    public boolean deleteProduct(long id){
         try {
-            if(productRepository.existsById(product.getProductId())) {
+            if(productRepository.existsById(id)) {
+                product = productRepository.findById(id).get();
                 productRepository.delete(product);
                 return true;
             }
             else {
                 log.info("product with id " +
-                        product.getProductId() +
+                        id +
                         " not found, delete is not possible");
                 return false;
             }

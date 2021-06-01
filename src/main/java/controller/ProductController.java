@@ -20,8 +20,8 @@ public class ProductController {
     private Optional<Product> optionalProduct;
     private Product product;
 
-    @GetMapping(path = "/{id}", produces = "application/json")
-    public ResponseEntity getProductById(@PathVariable long id) {
+    @GetMapping(produces = "application/json")
+    public ResponseEntity getProductById(@RequestParam long id) {
         if (id != 0) {
             optionalProduct = productService.getById(id);
             if(optionalProduct.isPresent()) {
@@ -67,6 +67,22 @@ public class ProductController {
             }
             else{
                 return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping(produces = "application/json")
+    public ResponseEntity deleteProduct(@RequestParam long id) {
+        if (id != 0) {
+            boolean result = productService.deleteProduct(id);
+            if(result) {
+                return new ResponseEntity(result, HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
             }
         }
         else {
