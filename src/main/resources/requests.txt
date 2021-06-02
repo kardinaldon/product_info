@@ -1,5 +1,5 @@
 ###ProductController
-GET http://localhost:8099/product/11
+GET http://localhost:8099/product?id=13
 
 ###
 POST http://localhost:8099/product
@@ -22,13 +22,13 @@ PUT http://localhost:8099/product
 Content-Type: application/json
 
 {
-  "productId": 11,
+  "productId": 13,
   "title": "ТестовоеНазвание11-1",
   "description": "ТестовоеОписание11-1",
   "language": {
     "languageId": "ru"
   },
-  "price": 112,
+  "price": 200,
   "priceCurrency": {
     "currencyId": "rub"
   },
@@ -37,7 +37,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:8099/product?id=11
+DELETE http://localhost:8099/product?id=13
 
 
 ###ProductClientResource
@@ -50,4 +50,4 @@ GET http://localhost:8099/product_resource/title?title=TestTitle1&language=en&cu
 GET http://localhost:8099/product_resource/description?description=TestDescription1&language=en&currency=usd&size=3&page=0
 
 ###
-GET http://localhost:8099/product_resource/all?language=en&currency=usd&size=3&page=0
+GET http://localhost:8099/product_resource/all?language=ru&currency=rub&size=5&page=0
