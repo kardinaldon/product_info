@@ -41,7 +41,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "product id not specified"),
             @ApiResponse(responseCode = "404", description = "product not found")})
     @GetMapping(produces = "application/json")
-    public ResponseEntity getProductById(@RequestParam @Parameter(description = "unique product identifier") long id) {
+    public ResponseEntity getProductById(@RequestParam @NotNull @Parameter(description = "unique product identifier") long id) {
         if (id != 0) {
             optionalProduct = productService.getById(id);
             if(optionalProduct.isPresent()) {
@@ -67,7 +67,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "one or more of the required fields of the product is not filled"),
             @ApiResponse(responseCode = "500", description = "an error occurred on the server while creating a new product")})
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity postProduct(@RequestBody @NotNull Product product) {
+    public ResponseEntity postProduct(@RequestBody Product product) {
         if (product.getTitle() != null && !product.getTitle().isEmpty()
                 && product.getPrice() >= 0
                 && product.getDescription() != null
@@ -95,7 +95,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "one or more of the required fields of the product is not filled"),
             @ApiResponse(responseCode = "500", description = "an error occurred on the server while updating product")})
     @PutMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity updateProduct(@RequestBody @NotNull Product product){
+    public ResponseEntity updateProduct(@RequestBody Product product){
         if(product.getProductId() != 0
                 && product.getTitle() != null && !product.getTitle().isEmpty()
                 && product.getPrice() > 0

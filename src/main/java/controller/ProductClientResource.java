@@ -53,8 +53,12 @@ public class ProductClientResource {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))),
-            @ApiResponse(responseCode = "400", description = "product id not specified"),
-            @ApiResponse(responseCode = "404", description = "product not found")})
+            @ApiResponse(responseCode = "400", description = "product id not specified",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                            schema = @Schema(ref = "#/components/schemas/Exception"))),
+            @ApiResponse(responseCode = "404", description = "product not found",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(ref = "#/components/schemas/Exception")))})
     @GetMapping(path = "/id", produces = "application/json")
     public ResponseEntity getProductById(@RequestParam @Min(1) @Parameter(description = "unique product identifier") long id,
                                          @RequestParam @NotNull @Parameter(description = "product data language") String language,
@@ -106,11 +110,15 @@ public class ProductClientResource {
             description = "allows to get a products by part of title, language and currency"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
+            @ApiResponse(responseCode = "200", description = "OK", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled",
                     content = @Content(mediaType = APPLICATION_JSON_VALUE,
-                            schema = @Schema(ref = "#/components/schemas/List<Product>"))),
-            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled"),
-            @ApiResponse(responseCode = "404", description = "products with this title, language, currency not found")})
+                            schema = @Schema(ref = "#/components/schemas/Exception"))),
+            @ApiResponse(responseCode = "404", description = "products with this title, language, currency not found",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                            schema = @Schema(ref = "#/components/schemas/Exception")))})
     @GetMapping(path = "/title",produces = "application/json")
     public ResponseEntity getProductByTitle(@RequestParam @NotNull @Parameter(description = "full title or part of it") String title,
                                             @RequestParam @NotNull @Parameter(description = "product data language") String language,
@@ -141,10 +149,15 @@ public class ProductClientResource {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = {
+                            @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))
+                    }),
+            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled",
                     content = @Content(mediaType = APPLICATION_JSON_VALUE,
-                            schema = @Schema(ref = "#/components/schemas/List<Product>"))),
-            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled"),
-            @ApiResponse(responseCode = "404", description = "products with this description, language, currency not found")})
+                            schema = @Schema(ref = "#/components/schemas/Exception"))),
+            @ApiResponse(responseCode = "404", description = "products with this description, language, currency not found",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                            schema = @Schema(ref = "#/components/schemas/Exception")))})
     @GetMapping(path = "/description",produces = "application/json")
     public ResponseEntity getProductByPartOfDescription(@RequestParam @NotNull @Parameter(description = "full description or part of it") String description,
                                                         @RequestParam @NotNull @Parameter(description = "product data language") String language,
@@ -175,10 +188,15 @@ public class ProductClientResource {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = {
+                            @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))
+                    }),
+            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled",
                     content = @Content(mediaType = APPLICATION_JSON_VALUE,
-                            schema = @Schema(ref = "#/components/schemas/List<Product>"))),
-            @ApiResponse(responseCode = "400", description = "one of the required fields is not filled"),
-            @ApiResponse(responseCode = "404", description = "products with data in the specified language and currency not found")})
+                            schema = @Schema(ref = "#/components/schemas/Exception"))),
+            @ApiResponse(responseCode = "404", description = "products with data in the specified language and currency not found",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE,
+                            schema = @Schema(ref = "#/components/schemas/Exception")))})
     @GetMapping(path = "/all",produces = "application/json")
     public ResponseEntity getAllProducts(@RequestParam @NotNull @Parameter(description = "product data language") String language,
                                          @RequestParam @NotNull @Parameter(description = "product currency of price") String currency,
