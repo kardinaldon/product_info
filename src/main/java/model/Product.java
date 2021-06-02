@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Schema(description = "Product")
@@ -20,6 +22,7 @@ public class Product {
     @Column(name = "product_id")
     private long productId;
 
+    @NotNull
     @Schema(description = "required field when creating and updating a product",
             example = "test title")
     @Column(name = "title")
@@ -36,6 +39,7 @@ public class Product {
     @JoinColumn(name="language_id", nullable=false)
     private Language language;
 
+    @Min(1)
     @Schema(description = "the price of product, required field when creating and updating a product",
             example = "200")
     @Column(name = "price")
